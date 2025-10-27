@@ -1,21 +1,17 @@
 # Uncomment the required imports before adding the code
 
-from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
-from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib.auth import logout
-from django.contrib import messages
-from datetime import datetime
-
-from django.http import JsonResponse
-from django.contrib.auth import login, authenticate
-import logging
 import json
-from django.views.decorators.csrf import csrf_exempt
-from .populate import initiate
-from .models import CarMake, CarModel
+import logging
 
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.csrf import csrf_exempt
+
+from .models import CarMake, CarModel
+from .populate import initiate
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -32,7 +28,9 @@ def get_cars(request):
     car_models = CarModel.objects.select_related("car_make")
     cars = []
     for car_model in car_models:
-        cars.append({"CarModel": car_model.name, "CarMake": car_model.car_make.name})
+        cars.append(
+            {"CarModel": car_model.name, "CarMake": car_model.car_make.name}
+        )
     return JsonResponse({"CarModels": cars})
 
 
@@ -63,7 +61,6 @@ def logout_request(request):
 # Create a `registration` view to handle sign up request
 @csrf_exempt
 def registration(request):
-    context = {}
     data = json.loads(request.body)
     username = data["userName"]
     password = data["password"]
@@ -71,7 +68,6 @@ def registration(request):
     last_name = data["lastName"]
     email = data["email"]
     username_exist = False
-    email_exist = False
     try:
         # Check if user already exists
         User.objects.get(username=username)
