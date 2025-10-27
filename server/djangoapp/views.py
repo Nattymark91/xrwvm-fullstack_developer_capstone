@@ -3,10 +3,9 @@
 import json
 import logging
 
-from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
@@ -72,7 +71,7 @@ def registration(request):
         # Check if user already exists
         User.objects.get(username=username)
         username_exist = True
-    except:
+    except (KeyError, ValueError) as e:
         # If not, simply log this is a new user
         logger.debug("{} is new user".format(username))
     # If it is a new user
